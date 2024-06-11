@@ -1,20 +1,24 @@
+import { useForm } from 'react-hook-form';
 import './App.css'
-import { useForm } from './hooks/useForm';
 
 function App() {
 
-  const {onInputChange, user, password, onReset} = useForm({initialForm: {
-    user: '',
-    password: ''
-  }});
+  const {
+    register, 
+    handleSubmit, 
+    formState: {errors},
+    reset
+  } = useForm({
+    defaultValues:{
+      user: "jhon"
+    }
+  });
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    console.log("user: ", user);
-    console.log("password: ", password);
 
-    onReset();
-  }
+  const onSubmit = handleSubmit((data) => {
+    console.log("data es: ", data)
+    reset();
+  })
 
   return (
     <section>
@@ -25,20 +29,36 @@ function App() {
             <input 
               type="text"
               className='border-2 border-black rounded-lg p-1' 
-              name='user'
-              onChange={onInputChange}
-              value={user}
+              {...register("user", {
+                required:{
+                  value:true,
+                  message:"usuario es requerido"
+                },
+              })}
             />
+            {
+              errors.user && <span className='text-red-500'>{errors.user.message}</span>
+            }
           </div>
           <div className='flex flex-col mt-4'>
             <label htmlFor="password">Password: </label>
             <input 
               type="text" 
               className='border-2 border-black rounded-lg p-1' 
-              name='password'
-              onChange={onInputChange}
-              value={password}
+              {...register("password", {
+                required:{
+                  value:true,
+                  message:"password es requerido"
+                },
+                minLength:{
+                  value:6,
+                  message:"Minimo 6 caracteres"
+                }
+              })}
             />
+            {
+              errors.password && <span className='text-red-500'>{errors.password.message}</span>
+            }
           </div>
           <div className='mt-4'>
             <button
